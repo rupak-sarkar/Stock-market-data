@@ -1,12 +1,12 @@
-name: Fetch Daily Stock Data
+name: Generate Numbers CSV
 
 on:
   schedule:
     - cron: '0 1 * * *' # Runs daily at 1 AM UTC
-  workflow_dispatch: # Allows for manual trigger
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
-  fetch-and-commit:
+  generate-numbers:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,18 +21,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install yfinance pandas
+        pip install pandas
 
-    - name: List files for debugging
-      run: ls -R
-
-    - name: Run script to fetch data
-      run: python fetch_daily_stock_data1.py
+    - name: Run script to generate numbers
+      run: python fetch_daily_stock_data.py
 
     - name: Commit and push changes
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add bsestock.csv
-        git commit -m "Automated daily stock data fetch" || echo "No changes to commit"
+        git add numbers.csv
+        git commit -m "Automated generation of numbers CSV" || echo "No changes to commit"
         git push
