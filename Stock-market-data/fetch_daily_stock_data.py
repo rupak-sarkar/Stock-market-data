@@ -13,7 +13,7 @@ date_str = yesterday.strftime('%Y-%m-%d')
 # Define the output file name
 output_file = 'bsestock.csv'
 
-# Determine write mode and header based on file existence
+# Determine write mode and header based on file existence and content
 if os.path.exists(output_file) and os.path.getsize(output_file) > 0:
     mode = 'a'
     header = False
