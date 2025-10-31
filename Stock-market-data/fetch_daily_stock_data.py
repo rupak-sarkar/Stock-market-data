@@ -12,7 +12,7 @@ end_date = today.strftime('%Y-%m-%d')
 start_date = (today - timedelta(days=1)).strftime('%Y-%m-%d')
 
 # Output file
-output_file = 'stock_data/historical_stock_data.csv'
+output_file = 'stock_data/historical_stock_data1.csv'
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
 # Determine write mode and header
