@@ -4,15 +4,20 @@ from datetime import datetime, timedelta
 import os
 
 # Define the list of tickers
-tickers = ["AAPL", "GOOGL", "MSFT", "AMZN"] # Customize this list
+tickers = ["AAPL", "GOOGL", "MSFT", "AMZN"]  # Customize this list
+
+# Define the output CSV file
+output_file = 'stock_data/historical_stock_data.csv'
+
+# Create the directory if it doesn't exist
+output_dir = os.path.dirname(output_file)
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
 # Get yesterday's date
 yesterday = datetime.now() - timedelta(days=1)
 end_date = yesterday.strftime('%Y-%m-%d')
 start_date = end_date
-
-# Define the output CSV file
-output_file = 'stock_data/historical_stock_data.csv'
 
 # Check if file exists to determine if it's the first run
 if os.path.exists(output_file):
@@ -21,12 +26,12 @@ if os.path.exists(output_file):
     last_date = existing_data.index.max().strftime('%Y-%m-%d')
     # Fetch data starting from the day after the last date
     start_date = (pd.to_datetime(last_date) + timedelta(days=1)).strftime('%Y-%m-%d')
-    mode = 'a' # Append mode
-    header = False # Don't write header again
+    mode = 'a'  # Append mode
+    header = False  # Don't write header again
 else:
-    existing_data = pd.DataFrame() # Empty dataframe for first run
-    mode = 'w' # Write mode
-    header = True # Write header
+    existing_data = pd.DataFrame()  # Empty dataframe for first run
+    mode = 'w'  # Write mode
+    header = True  # Write header
 
 print(f"Fetching data from {start_date} to {end_date}")
 
@@ -38,9 +43,9 @@ for ticker in tickers:
         data['Ticker'] = ticker
         all_data = pd.concat([all_data, data])
 
-# Append new data to the CSV file
+# Write new data to the CSV file
 if not all_data.empty:
     all_data.to_csv(output_file, mode=mode, header=header)
-    print(f"Successfully appended {len(all_data)} new rows.")
+    print(f"Successfully saved {len(all_data)} rows to {output_file}.")
 else:
-    print("No new data to append.")
+    print("No data fetched for the specified date range.")
