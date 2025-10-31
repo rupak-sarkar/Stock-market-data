@@ -1,13 +1,25 @@
-import pandas as pd
-import os
+import csv
+from datetime import datetime
+from pathlib import Path
 
-# Output file path
-output_file = 'numbers.csv'
+def create_csv():
+    # Save CSV in a 'data' directory
+    output_dir = Path("data")
+    output_dir.mkdir(exist_ok=True)
 
-# Generate numbers 1 to 10
-data = {'Number': list(range(1, 11))}
-df = pd.DataFrame(data)
+    filename = output_dir / f"data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    data = [
+        ["Name", "Age", "City"],
+        ["Alice", 28, "New York"],
+        ["Bob", 34, "Los Angeles"],
+        ["Charlie", 25, "Chicago"]
+    ]
 
-# Save to CSV
-df.to_csv(output_file, index=False)
-print(f"✅ Successfully saved numbers 1 to 10 in {output_file}")
+    with open(filename, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(data)
+
+    print(f"✅ CSV created: {filename}")
+
+if __name__ == "__main__":
+    create_csv()
