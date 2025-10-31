@@ -24,7 +24,7 @@ jobs:
           pip install -r requirements.txt || true
 
       - name: Run Python script
-        run: python create_csv.py
+        run: python fetch_daily_stock_data.py
 
       - name: Upload CSV as artifact
         uses: actions/upload-artifact@v4
