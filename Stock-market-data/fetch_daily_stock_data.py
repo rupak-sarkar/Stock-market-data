@@ -20,18 +20,18 @@ end_date = yesterday.strftime('%Y-%m-%d')
 start_date = end_date
 
 # Check if file exists to determine if it's the first run
-if os.path.exists(output_file):
+
+if os.path.exists(output_file) and os.path.getsize(output_file) > 0:
     existing_data = pd.read_csv(output_file, index_col=0, parse_dates=True)
-    # Find the last date with data
     last_date = existing_data.index.max().strftime('%Y-%m-%d')
-    # Fetch data starting from the day after the last date
     start_date = (pd.to_datetime(last_date) + timedelta(days=1)).strftime('%Y-%m-%d')
-    mode = 'a'  # Append mode
-    header = False  # Don't write header again
+    mode = 'a'
+    header = False
 else:
-    existing_data = pd.DataFrame()  # Empty dataframe for first run
-    mode = 'w'  # Write mode
-    header = True  # Write header
+    existing_data = pd.DataFrame()
+    mode = 'w'
+    header = True
+
 
 print(f"Fetching data from {start_date} to {end_date}")
 
