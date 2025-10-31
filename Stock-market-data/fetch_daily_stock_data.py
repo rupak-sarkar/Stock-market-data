@@ -3,17 +3,19 @@ import pandas as pd
 from datetime import datetime, timedelta
 import os
 
-# Define the list of tickers
+# Define tickers
 tickers = ["AAPL", "GOOGL", "MSFT", "AMZN"]
 
-# Get yesterday's date
-yesterday = datetime.now() - timedelta(days=1)
-date_str = yesterday.strftime('%Y-%m-%d')
+# Date range
+today = datetime.now()
+end_date = today.strftime('%Y-%m-%d')
+start_date = (today - timedelta(days=1)).strftime('%Y-%m-%d')
 
-# Define the output file name
-output_file = 'bsestock.csv'
+# Output file
+output_file = 'stock_data/historical_stock_data.csv'
+os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
-# Determine write mode and header based on file existence and content
+# Determine write mode and header
 if os.path.exists(output_file) and os.path.getsize(output_file) > 0:
     mode = 'a'
     header = False
@@ -21,18 +23,30 @@ else:
     mode = 'w'
     header = True
 
-# Fetch data for all tickers
-print(f"Fetching data for {date_str}")
-all_data = pd.DataFrame()
-for ticker in tickers:
-    data = yf.download(ticker, start=date_str, end=date_str)
-    if not data.empty:
-        data['Ticker'] = ticker
-        all_data = pd.concat([all_data, data])
+print(f"Fetching data from {start_date} to {end_date}")
 
-# Save the data to the CSV file
-if not all_data.empty:
-    all_data.to_csv(output_file, mode=mode, header=header)
-    print(f"Successfully saved {len(all_data)} rows to {output_file}.")
+# Fetch and format data
+all_data = []
+for ticker in tickers:
+    data = yf.download(ticker, start=start_date, end=end_date)
+    if not data.empty:
+        data.reset_index(inplace=True)
+        data['date'] = data['Date'].dt.strftime('%m/%d/%Y')
+        data['Ticker'] = ticker
+        # Keep only required columns and round
+        data = data[['date', 'Close', 'High', 'Low', 'Open', 'Volume', 'Ticker']]
+        data = data.round(2)
+        all_data.append(data)
+
+# Combine all tickers
+final_df = pd.concat(all_data, ignore_index=True)
+
+# Save to CSV
+if not final_df.empty:
+    final_df.to_csv(output_file, mode=mode, header=header, index=False)
+    print(f"✅ Saved {len(final_df)} rows to {output_file}")
 else:
-    print("No data fetched for the specified date.")
+    print("⚠️ No data fetched for the specified date range")
+
+# Display for debugging
+print(final_df)
